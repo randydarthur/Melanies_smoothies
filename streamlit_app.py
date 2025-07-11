@@ -2,6 +2,7 @@
 import streamlit as st
 from snowflake.snowpark.functions import col
 import requests
+import pandas as pd
 
 
 
@@ -32,7 +33,12 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
         st.subheader(fruit_chosen + ' nutrition information')
-        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + fruit_chosen)
+        my_search_value = session.table("smoothies.public.fruit_options") \
+            .select(col('SEARCH_ON')) \
+            .filter(col('FRUIT_NAME') == fruit_chosen) \
+            .to_pandas()
+        search_fruit = my_search_value['SEARCH_ON'].iloc[0] if not my_search_value.empty else search_fruit = fruit_chosen
+        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + search_fruit)
         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
 
 my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
