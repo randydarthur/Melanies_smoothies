@@ -38,6 +38,7 @@ if ingredients_list:
             .filter(col('FRUIT_NAME') == fruit_chosen) \
             .to_pandas()
         search_fruit = my_search_value['SEARCH_ON'].iloc[0] if not my_search_value.empty else search_fruit = fruit_chosen
+        st.write('The search value for ', fruit_chosen,' is ', search_fruit, '.')
         smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + search_fruit)
         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
 
